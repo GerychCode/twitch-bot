@@ -1,12 +1,12 @@
+const { timeStamp } = require('console');
 const fs = require('fs');
-
 module.exports = class RandomData {
     constructor(file_name) {
         this.file = file_name;
         this.data = null;
     }
-    async getData() {
-        return fs.promises.readFile(`./${this.file}.txt`, 'utf8')
+    async getReplicas() {
+        return fs.promises.readFile(`./Replicas.txt`, 'utf8')
           .then((getting_data) => {
             this.data = getting_data.split('\n').map(line => line.replace(/\r/g, ''));
             return this;
@@ -14,9 +14,25 @@ module.exports = class RandomData {
           .catch((err) => {
             throw new Error(`Error reading file: ${err.message}`);
         });
+    }async getAccounts() {
+        return fs.promises.readFile(`./Verification.json`, 'utf8')
+          .then((getting_data) => {
+            this.data = getting_data;
+            return this;
+        })
+          .catch((err) => {
+            throw new Error(`Error reading file: ${err.message}`);
+        });
     }
     async getRandom_Item() {
-        let rand = this.data.length > 1 ? Math.floor(Math.random() * (Math.floor(this.data.length - 1) - Math.ceil(0) + 1) + Math.ceil(0)) : 0;
-        return this.data[rand];
+        let rand;
+        if(Array.isArray(this.data)) {
+            rand = this.data.length > 1 ? Math.floor(Math.random() * (Math.floor(this.data.length - 1) - Math.ceil(0) + 1) + Math.ceil(0)) : 0;
+            return this.data[rand];
+        }
+        else {
+            rand =  JSON.parse(this.data).length > 1 ? Math.floor(Math.random() * (Math.floor(JSON.parse(this.data).length - 1) - Math.ceil(0) + 1) + Math.ceil(0)) : 0;
+            return JSON.parse(this.data)[rand];
+        }
     }
 }
